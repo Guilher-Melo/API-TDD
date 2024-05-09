@@ -1,3 +1,4 @@
+from typing import List
 from uuid import UUID
 
 import pymongo
@@ -31,15 +32,13 @@ class ProductUseCase():
 
         return ProductOut(**result)
 
-    async def query(self) -> list[ProductOut]:
+    async def query(self) -> List[ProductOut]:
         return [ProductOut(**item) async for item in self.collection.find()]
 
     async def update(self, id: UUID, body: ProductUpdate) -> ProductUpdateOut:
-        product = ProductUpdate(**body.model_dump(exclude_none=True))
-
         result = await self.collection.find_one_and_update(
             filter={"id": id},
-            update={"$set": product.model_dump()},
+            update={"$set": body.model_dump(exclude_none=True)},
             return_document=pymongo.ReturnDocument.AFTER
         )
 
