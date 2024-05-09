@@ -19,7 +19,13 @@ async def post(
     body: ProductIn = Body(...),
     usecase: ProductUseCase = Depends()
 ) -> ProductOut:
-    return await usecase.create(body=body)
+    try:
+        return await usecase.create(body=body)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=e
+        )
 
 
 @router.get(
